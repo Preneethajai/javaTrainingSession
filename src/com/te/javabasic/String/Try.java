@@ -5,8 +5,9 @@ public class Try {
 	static String s2 = "Hello";
 
 	public static void main(String[] args) {
-		
-		System.out.println(s1.equals(s2));
+		String s3=new String("Hello");
+		System.out.println(s1.equals(s3));
+		System.out.println(s1==s3);
 	}
 
 }
