@@ -6,8 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import com.te.pcm.pcmEntity.AppUser;
 
+import com.te.pcm.pcmentity.AppUser;
 @Component
 public class CustomerUserDetails implements UserDetails {
 
@@ -23,12 +23,13 @@ public class CustomerUserDetails implements UserDetails {
 	}
 	
 	public CustomerUserDetails(AppUser user) {
+		super();
 		this.user = user;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singleton(new SimpleGrantedAuthority(user.getUserName()));
+		return Collections.singleton(new SimpleGrantedAuthority(user.getRole()));
 	}
 
 	@Override

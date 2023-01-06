@@ -1,8 +1,8 @@
-package com.te.pcm.pcmDto;
+package com.te.pcm.pcmdto;
 
 import java.util.List;
 
-import com.te.pcm.pcmEntity.CategoriesEntity;
+import com.te.pcm.pcmentity.CategoriesEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

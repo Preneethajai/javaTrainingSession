@@ -1,46 +1,46 @@
-package com.te.pcm.pcmServiceImp;
+package com.te.pcm.pcmserviceimp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.aspectj.weaver.NewConstructorTypeMunger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.te.pcm.pcmDto.CategoriesDto;
-import com.te.pcm.pcmDto.DepartmentsDto;
-import com.te.pcm.pcmDto.EmployeeDto;
-import com.te.pcm.pcmDto.OptionTypesDto;
-import com.te.pcm.pcmDto.OptionsDto;
-import com.te.pcm.pcmDto.ProductByIdDto;
-import com.te.pcm.pcmDto.ProductsDto;
-import com.te.pcm.pcmDto.SearchCategoryDto;
-import com.te.pcm.pcmDto.SearchProductDto;
-import com.te.pcm.pcmDto.VariationTypesDto;
-import com.te.pcm.pcmDto.VariationsDto;
-import com.te.pcm.pcmEntity.AppUser;
-import com.te.pcm.pcmEntity.CategoriesEntity;
-import com.te.pcm.pcmEntity.DepartmentsEntity;
-import com.te.pcm.pcmEntity.EmployeeEntity;
-import com.te.pcm.pcmEntity.OptionTypesEntity;
-import com.te.pcm.pcmEntity.OptionsEntity;
-import com.te.pcm.pcmEntity.ProductEntity;
-//import com.te.pcm.pcmEntity.Roles;
-import com.te.pcm.pcmEntity.VariationTypesEntity;
-import com.te.pcm.pcmEntity.VariationsEntity;
-import com.te.pcm.pcmRepository.CategoryRepository;
-import com.te.pcm.pcmRepository.EmpRegisterRepository;
-import com.te.pcm.pcmRepository.OptionTypeRepository;
-import com.te.pcm.pcmRepository.OptionsRepository;
-import com.te.pcm.pcmRepository.ProductRepository;
-import com.te.pcm.pcmRepository.RegisterRepository;
-//import com.te.pcm.pcmRepository.RolesRepository;
-import com.te.pcm.pcmRepository.UserRepository;
-import com.te.pcm.pcmRepository.VariationRepository;
-import com.te.pcm.pcmRepository.VariationTypeRepository;
+
+import com.te.pcm.exception.InvalidId;
+import com.te.pcm.pcmdto.CategoriesDto;
+import com.te.pcm.pcmdto.DepartmentsDto;
+import com.te.pcm.pcmdto.EmployeeDto;
+import com.te.pcm.pcmdto.EmployeesDto;
+import com.te.pcm.pcmdto.OptionTypesDto;
+import com.te.pcm.pcmdto.OptionsDto;
+import com.te.pcm.pcmdto.ProductByIdDto;
+import com.te.pcm.pcmdto.ProductsDto;
+import com.te.pcm.pcmdto.SearchCategoryDto;
+import com.te.pcm.pcmdto.SearchProductDto;
+import com.te.pcm.pcmdto.VariationTypesDto;
+import com.te.pcm.pcmdto.VariationsDto;
+import com.te.pcm.pcmentity.AppUser;
+import com.te.pcm.pcmentity.CategoriesEntity;
+import com.te.pcm.pcmentity.DepartmentsEntity;
+import com.te.pcm.pcmentity.EmployeeEntity;
+import com.te.pcm.pcmentity.OptionTypesEntity;
+import com.te.pcm.pcmentity.OptionsEntity;
+import com.te.pcm.pcmentity.ProductEntity;
+import com.te.pcm.pcmentity.VariationTypesEntity;
+import com.te.pcm.pcmentity.VariationsEntity;
+import com.te.pcm.pcmrepository.CategoryRepository;
+import com.te.pcm.pcmrepository.EmpRegisterRepository;
+import com.te.pcm.pcmrepository.OptionTypeRepository;
+import com.te.pcm.pcmrepository.OptionsRepository;
+import com.te.pcm.pcmrepository.ProductRepository;
+import com.te.pcm.pcmrepository.RegisterRepository;
+import com.te.pcm.pcmrepository.UserRepository;
+import com.te.pcm.pcmrepository.VariationRepository;
+import com.te.pcm.pcmrepository.VariationTypeRepository;
 import com.te.pcm.pcmservice.PcmService;
 
 @Service
@@ -68,44 +68,42 @@ public class PcmServiceImp implements PcmService {
 
 	@Autowired
 	private OptionTypeRepository optionTypeRepository;
-	
+
 	@Autowired
 	private UserRepository userRepository;
-	
-//	@Autowired
-//	private RolesRepository rolesRepository;
 
 	@Override
-	public DepartmentsEntity register(DepartmentsEntity departmentsEntity) {
+	public DepartmentsEntity register(DepartmentsDto departmentsDto) {
+		DepartmentsEntity departmentsEntity = new DepartmentsEntity();
+		BeanUtils.copyProperties(departmentsDto, departmentsEntity);
 		return repository.save(departmentsEntity);
 	}
-	
+
 	@Override
 	public EmployeeEntity empRegister(EmployeesDto employeeDto) {
 		EmployeeEntity employeeEntity = new EmployeeEntity();
-		BeanUtils.copyProperties(employeeDto,employeeEntity );
+		BeanUtils.copyProperties(employeeDto, employeeEntity);
 		String empPassword = employeeDto.getEmpPassword();
 		String encode = new BCryptPasswordEncoder().encode(empPassword);
-		AppUser appUser =new AppUser();
+		AppUser appUser = new AppUser();
 //		Roles roles = new Roles();
-		EmployeeEntity findByEmpName = empRegisterRep.findByEmpName(employeeDto.getEmpName());
+//		EmployeeEntity findByEmpName = empRegisterRep.findByEmpName(employeeDto.getEmpName());
 		appUser.setUserName(employeeDto.getEmpName());
 		appUser.setPassword(encode);
-		appUser.setRoles(employeeDto.getEmpRoles());
+		appUser.setRole(employeeDto.getEmpRoles());
 		userRepository.save(appUser);
 		return empRegisterRep.save(employeeEntity);
 	}
 
 	@Override
 	public List<DepartmentsEntity> getall() {
-		List<DepartmentsEntity> findAll = repository.findAll();
-		return findAll;
+		return repository.findAll();
 	}
 
 	@Override
 	public List<EmployeeDto> getEmployee() {
 		List<EmployeeEntity> findAll = empRegisterRep.findAll();
-		List<EmployeeDto> employeeDtos = new ArrayList<EmployeeDto>();
+		List<EmployeeDto> employeeDtos = new ArrayList<>();
 		for (EmployeeEntity employee : findAll) {
 			int empId = employee.getEmpId();
 			String empName = employee.getEmpName();
@@ -120,47 +118,45 @@ public class PcmServiceImp implements PcmService {
 	@Override
 	public List<DepartmentsEntity> getById(ProductByIdDto productByIdDto) {
 		BeanUtils.copyProperties(productByIdDto, repository);
-		List<DepartmentsEntity> findAll = repository.findAll();
-//		Stream<DepartmentsEntity> sorted = findAll.stream().sorted();
-		return findAll;
+		return repository.findAll();
 	}
 
 	@Override
 	public DepartmentsEntity updateCategoryTitle(CategoriesDto categoriesDto) {
-//	DepartmentsEntity departmentsEntity = new DepartmentsEntity();
 		CategoriesEntity categoriesEntity = new CategoriesEntity();
 		BeanUtils.copyProperties(categoriesDto, categoriesEntity);
 		DepartmentsEntity entity = repository.findById(categoriesDto.getDepartmentId()).orElse(null);
 		if (entity != null) {
-//		List<CategoriesEntity> category = entity.getCategoriesEntities().stream().filter(c -> c.getCategoryId()>0).collect(Collectors.toList());
 			List<CategoriesEntity> category = entity.getCategoriesEntities();
 			for (CategoriesEntity categoriesEntitys : category) {
-//				categoriesEntitys.setCategoryId(categoriesDto.getCategoryId());
 				categoriesEntitys.setCategoryTitle(categoriesDto.getCategoryTitle());
 			}
 			entity.setCategoriesEntities(category);
 			return repository.save(entity);
 		}
-		return null;
+		throw new InvalidId("please enter the valid id");
 	}
 
 	@Override
 	public CategoriesEntity updateCategory(CategoriesDto categoriesDto) {
-		CategoriesEntity categoriesEntity = categoryRepository.findById(categoriesDto.getCategoryId()).orElse(null);
+		CategoriesEntity categoriesEntity = categoryRepository.findById(categoriesDto.getCategoryId())
+				.orElseThrow(RuntimeException::new);
 		categoriesEntity.setCategoryTitle(categoriesDto.getCategoryTitle());
 		return categoryRepository.save(categoriesEntity);
 	}
 
 	@Override
 	public ProductEntity updateProduct(ProductsDto productsDto) {
-		ProductEntity productEntity = productRepository.findById(productsDto.getProductId()).orElse(null);
+		ProductEntity productEntity = productRepository.findById(productsDto.getProductId())
+				.orElseThrow(RuntimeException::new);
 		productEntity.setProductTitle(productsDto.getProductTitle());
 		return productRepository.save(productEntity);
 	}
 
 	@Override
 	public VariationsEntity updateVariation(VariationsDto variationsDto) {
-		VariationsEntity variationsEntity = variationRepository.findById(variationsDto.getVariationId()).orElse(null);
+		VariationsEntity variationsEntity = variationRepository.findById(variationsDto.getVariationId())
+				.orElseThrow(RuntimeException::new);
 		variationsEntity.setVariationTitle(variationsDto.getVariationTitle());
 		return variationRepository.save(variationsEntity);
 	}
@@ -168,14 +164,15 @@ public class PcmServiceImp implements PcmService {
 	@Override
 	public VariationTypesEntity updateVariatioType(VariationTypesDto variationTypesDto) {
 		VariationTypesEntity variationTypesEntity = variationTypeRepository
-				.findById(variationTypesDto.getVariationTypeId()).orElse(null);
+				.findById(variationTypesDto.getVariationTypeId()).orElseThrow(RuntimeException::new);
 		variationTypesEntity.setVariationTypeTitle(variationTypesDto.getVariationTypeTitle());
 		return variationTypeRepository.save(variationTypesEntity);
 	}
 
 	@Override
 	public OptionsEntity updateOptions(OptionsDto optionsDto) {
-		OptionsEntity optionsEntity = optionsRepository.findById(optionsDto.getOptionId()).orElse(null);
+		OptionsEntity optionsEntity = optionsRepository.findById(optionsDto.getOptionId())
+				.orElseThrow(RuntimeException::new);
 		optionsEntity.setOptionTitle(optionsDto.getOptionTitle());
 		return optionsRepository.save(optionsEntity);
 	}
@@ -183,125 +180,98 @@ public class PcmServiceImp implements PcmService {
 	@Override
 	public OptionTypesEntity updateOptionType(OptionTypesDto optionTypesDto) {
 		OptionTypesEntity optionTypesEntity = optionTypeRepository.findById(optionTypesDto.getOptionTypeId())
-				.orElse(null);
+				.orElseThrow(RuntimeException::new);
 		optionTypesEntity.setOptionTypeTitle(optionTypesDto.getOptionTypeTitle());
 		return optionTypeRepository.save(optionTypesEntity);
 	}
 
 	@Override
 	public Boolean deleteProduct(ProductsDto productsDto) {
-		ProductEntity productEntity = new ProductEntity();
-		BeanUtils.copyProperties(productsDto, productEntity);
-		if (productRepository.findById(productsDto.getProductId()) != null) {
-			productRepository.delete(productEntity);
-		}
+		ProductEntity entity = productRepository.findById(productsDto.getProductId())
+				.orElseThrow(RuntimeException::new);
+		productRepository.deleteById(entity.getProductId());
 		return true;
 	}
 
 	@Override
 	public Boolean deleteOption(OptionsDto optionsDto) {
-		OptionsEntity optionsEntity = new OptionsEntity();
-		BeanUtils.copyProperties(optionsDto, optionsEntity);
-		if (optionsRepository.findById(optionsDto.getOptionId()) != null) {
-			optionsRepository.delete(optionsEntity);
-		}
+		OptionsEntity entity = optionsRepository.findById(optionsDto.getOptionId()).orElseThrow(RuntimeException::new);
+		optionsRepository.deleteById(entity.getOptionId());
 		return true;
 	}
 
 	@Override
 	public Boolean deleteOptionTypes(OptionTypesDto optionTypesDto) {
-		OptionTypesEntity optionTypesEntity = new OptionTypesEntity();
-		BeanUtils.copyProperties(optionTypesDto, optionTypesEntity);
-		if (optionTypeRepository.findById(optionTypesDto.getOptionTypeId()) != null) {
-			optionTypeRepository.delete(optionTypesEntity);
-		}
+		OptionTypesEntity entity = optionTypeRepository.findById(optionTypesDto.getOptionTypeId())
+				.orElseThrow(RuntimeException::new);
+		optionTypeRepository.deleteById(entity.getOptionTypeId());
 		return true;
 	}
 
 	@Override
 	public List<ProductEntity> sortProducts() {
-//		List<ProductEntity> findById = productRepository.findById(productsDto.getProductId());
 		List<ProductEntity> findAll = productRepository.findAll();
-		List<ProductEntity> collect = findAll.stream()
-				.sorted((s1, s2) -> s1.getProductTitle().compareTo(s2.getProductTitle())).collect(Collectors.toList());
-		return collect;
+		return findAll.stream().sorted((s1, s2) -> s1.getProductTitle().compareTo(s2.getProductTitle()))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<VariationsEntity> sortByVariation() {
-	List<VariationsEntity> findAll = variationRepository.findAll();
-		List<VariationsEntity> collect = findAll.stream()
-				.sorted((s1, s2) -> s1.getVariationTitle().compareTo(s2.getVariationTitle()))
+		List<VariationsEntity> findAll = variationRepository.findAll();
+		return findAll.stream().sorted((s1, s2) -> s1.getVariationTitle().compareTo(s2.getVariationTitle()))
 				.collect(Collectors.toList());
-		return collect;
 	}
 
 	@Override
 	public List<VariationTypesEntity> sortByVariationType() {
-List<VariationTypesEntity> findAll = variationTypeRepository.findAll();
-		List<VariationTypesEntity> collect = findAll.stream()
-				.sorted((s1, s2) -> s1.getVariationTypeTitle().compareTo(s2.getVariationTypeTitle()))
+		List<VariationTypesEntity> findAll = variationTypeRepository.findAll();
+		return findAll.stream().sorted((s1, s2) -> s1.getVariationTypeTitle().compareTo(s2.getVariationTypeTitle()))
 				.collect(Collectors.toList());
-		return collect;
 	}
 
 	@Override
 	public List<OptionsEntity> sortByOption() {
 		List<OptionsEntity> findAll = optionsRepository.findAll();
-		List<OptionsEntity> collect = findAll.stream()
-				.sorted((s1, s2) -> s1.getOptionTitle().compareTo(s2.getOptionTitle())).collect(Collectors.toList());
-		return collect;
+		return findAll.stream().sorted((s1, s2) -> s1.getOptionTitle().compareTo(s2.getOptionTitle()))
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<OptionTypesEntity> sortByOptionType() {
-		List<OptionTypesEntity> typesEntities = new ArrayList<OptionTypesEntity>();
-//		BeanUtils.copyProperties(optionTypesDto, typesEntities);
-//		Optional<OptionTypesEntity> findById = optionTypeRepository.findById(optionTypesDto.getOptionTypeId());
 		List<OptionTypesEntity> findAll = optionTypeRepository.findAll();
-		List<OptionTypesEntity> collect = findAll.stream()
-				.sorted((s1, s2) -> s1.getOptionTypeTitle().compareTo(s2.getOptionTypeTitle()))
+		return findAll.stream().sorted((s1, s2) -> s1.getOptionTypeTitle().compareTo(s2.getOptionTypeTitle()))
 				.collect(Collectors.toList());
-		return collect;
 	}
 
 	@Override
 	public List<SearchProductDto> serachProduct(int productsId) {
-		DepartmentsEntity entity = repository.findById(productsId).orElse(null);
-		List<SearchProductDto> productsDto = new ArrayList<SearchProductDto>();
+		DepartmentsEntity entity = repository.findById(productsId).orElseThrow(RuntimeException::new);
+		List<SearchProductDto> productsDto = new ArrayList<>();
 		List<ProductEntity> productEntities = entity.getProductEntity();
-		if(entity!=null) {
-		for (ProductEntity productEntity : productEntities) {
-			int productId = productEntity.getProductId();
-			String productTitle = productEntity.getProductTitle();
-			productsDto.add(new SearchProductDto(productId,productTitle));
-			}
-			return productsDto;
+			for (ProductEntity productEntity : productEntities) {
+				int productId = productEntity.getProductId();
+				String productTitle = productEntity.getProductTitle();
+				productsDto.add(new SearchProductDto(productId, productTitle));
 		}
-		return null;
+			return productsDto;
 	}
 
 	@Override
 	public List<SearchCategoryDto> serachCategory(int categorystId) {
-		DepartmentsEntity entity = repository.findById(categorystId).orElse(null);
-		List<SearchCategoryDto> categoryDtos = new ArrayList<SearchCategoryDto>();
+		DepartmentsEntity entity = repository.findById(categorystId).orElseThrow(RuntimeException::new);
+		List<SearchCategoryDto> categoryDtos = new ArrayList<>();
 		List<CategoriesEntity> categoriesEntities = entity.getCategoriesEntities();
-		if(entity!=null) {
 			for (CategoriesEntity categoriesEntity : categoriesEntities) {
 				int categoryId = categoriesEntity.getCategoryId();
 				String categoryTitle = categoriesEntity.getCategoryTitle();
-				categoryDtos.add(new SearchCategoryDto(categoryId,categoryTitle));
+				categoryDtos.add(new SearchCategoryDto(categoryId, categoryTitle));
 			}
 			return categoryDtos;
-		}
-		return null;
 	}
 
-
-
-
-
-
-	
+	@Override
+	public DepartmentsEntity register(DepartmentsEntity departmentsEntity) {
+		return repository.save(departmentsEntity);
+	}
 
 }

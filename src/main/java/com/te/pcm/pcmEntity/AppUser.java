@@ -1,4 +1,4 @@
-package com.te.pcm.pcmEntity;
+package com.te.pcm.pcmentity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -21,7 +21,7 @@ public class AppUser {
 	@Id
 	private String userName;
 	private String password;
-	private String roles;
+	private String role;
 	
 //	@ManyToOne(cascade = CascadeType.ALL)
 //	private Roles roles;

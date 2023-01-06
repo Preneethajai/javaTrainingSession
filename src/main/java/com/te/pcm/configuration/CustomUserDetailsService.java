@@ -5,8 +5,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.te.pcm.pcmEntity.AppUser;
-import com.te.pcm.pcmRepository.UserRepository;
+
+import com.te.pcm.pcmentity.AppUser;
+import com.te.pcm.pcmrepository.UserRepository;
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
 
@@ -15,7 +16,7 @@ public class CustomUserDetailsService implements UserDetailsService{
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		AppUser user = userRepository.findByuserName(username);
+		AppUser user = userRepository.findByUserName(username);
 		if(user == null) {
 			throw new UsernameNotFoundException("User Not Found");
 		}

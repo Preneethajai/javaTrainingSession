@@ -1,4 +1,4 @@
-package com.te.pcm.pcmEntity;
+package com.te.pcm.pcmentity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;

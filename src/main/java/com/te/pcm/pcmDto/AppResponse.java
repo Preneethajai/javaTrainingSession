@@ -1,4 +1,4 @@
-package com.te.pcm.pcmDto;
+package com.te.pcm.pcmdto;
 
 
 

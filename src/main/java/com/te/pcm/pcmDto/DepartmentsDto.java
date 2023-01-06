@@ -1,9 +1,9 @@
-package com.te.pcm.pcmDto;
+package com.te.pcm.pcmdto;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ManyToOne;
 
-import com.te.pcm.pcmEntity.EmployeeEntity;
+import com.te.pcm.pcmentity.EmployeeEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

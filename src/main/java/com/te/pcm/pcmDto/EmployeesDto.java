@@ -1,6 +1,4 @@
-package com.te.pcm.pcmServiceImp;
-
-import com.te.pcm.pcmDto.EmployeeDto;
+package com.te.pcm.pcmdto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +7,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
-
 public class EmployeesDto {
 	private int empId;
 	private String empName;

@@ -3,50 +3,61 @@ package com.te.pcm.configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 //import org.springframework.security.authentication.AuthenticationProvider;
 //import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Configuration
 @EnableWebSecurity
-//@RequiredArgsConstructor
+@Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+
+	private final String ADMIN = "ADMIN";
+	private final String USER = "USER";
+	
 	@Autowired
-	private UserDetailsService service;
+	private UserDetailsService userDetailsService;
 
-	@Autowired
-	private CustomUserDetailsService userDetailsService;
-
-//	@Override
-//	protected void configure(HttpSecurity http) throws Exception {
-//		http.authorizeRequests().antMatchers("/resources/**", "/signup", "/about").permitAll().anyRequest()
-//				.authenticated().and().formLogin().loginPage("/login").permitAll().and().logout().permitAll();
-//	}
-
-//	@Bean
-//	AuthenticationProvider authenticateProviders() {
-//		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//		provider.setUserDetailsService(service);
-//		provider.setPasswordEncoder(new BCryptPasswordEncoder());
-//		return provider;
-////	}
-//	
 	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
+	AuthenticationProvider authenticateProviders() {
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+		provider.setUserDetailsService(userDetailsService);
+		provider.setPasswordEncoder(new BCryptPasswordEncoder());
+		return provider;
 	}
-
+	
 	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+	protected void configure(HttpSecurity http) throws Exception {
+		http.csrf().disable();
+		http.authorizeRequests().antMatchers("/").permitAll();
+		http.authorizeRequests().antMatchers("/user/**").hasAuthority(USER);
+		http.authorizeRequests().antMatchers("/admin/**").hasAuthority(ADMIN)
+		.anyRequest().authenticated().and().httpBasic();
+				
 	}
+	
+	
+//		
+//	@Bean
+//	@Override
+//	protected AuthenticationManager authenticationManager() throws Exception {
+//		return super.authenticationManager();
+//	}
+//	
+//	
+//	@Override
+//	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder);
+//	}
 
 //	@Override
 //	protected void configure(HttpSecurity http) throws Exception {
@@ -54,12 +65,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //				.hasRole("USER").antMatchers("/admin/**").hasRole("ADMIN").anyRequest().authenticated().and()
 //				.httpBasic();
 //	}
+
 	
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().antMatchers("/**").permitAll().antMatchers("/controller/**")
-				.hasRole("USER").antMatchers("/admin/**").hasRole("ADMIN").anyRequest().authenticated().and()
-				.httpBasic();
-	}
+//	
+//	@Override
+//	protected void configure(HttpSecurity http) throws Exception {
+//		http.csrf().disable();
+//		http.authorizeRequests().antMatchers("/").permitAll();
+//		http.authorizeRequests().antMatchers("/user/**").hasAuthority(USER);
+//		http.authorizeRequests().antMatchers("/admin/**").hasAuthority(ADMIN)
+//		.anyRequest().authenticated().and().httpBasic();
+////				http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//				
+//	}
 
 }

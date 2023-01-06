@@ -1,5 +1,5 @@
 
-package com.te.pcm.pcmDto;
+package com.te.pcm.pcmdto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
