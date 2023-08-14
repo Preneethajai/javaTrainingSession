@@ -1,0 +1,5 @@
+package com.maveric.unobank.exceptions;
+
+public class InvalidException {
+
+}

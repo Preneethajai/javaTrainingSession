@@ -1,0 +1,16 @@
+package com.maveric.unobank.model;
+
+import org.springframework.stereotype.Component;
+
+import lombok.Data;
+
+@Component
+@Data
+public class ErrorMessage {
+private String message;
+
+public ErrorMessage(String message) {
+	this.message = message;
+}
+
+}

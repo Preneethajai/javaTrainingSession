@@ -1,0 +1,8 @@
+package com.maveric.unobank.exceptions;
+
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class AduitTrailExceptions {
+
+}
